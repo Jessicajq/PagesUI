@@ -90,9 +90,7 @@ export default {
     *queryUploadTreeName({ payload }, { call, put }) {
       yield call(queryUploadTreeName, payload);
     },
-    *queryUpdateCaseBodyData({ payload }, { call, put }) {
-      yield call(queryUpdateCaseBodyData, payload);
-    },
+
     *queryUpdateCaseData({ payload }, { call, put }) {
       yield call(queryUpdateCaseData, payload);
     },
@@ -116,6 +114,32 @@ export default {
     },
     *queryUpdateGlobalValues({ payload }, { call, put }) {
       yield call(queryUpdateGlobalValues, payload);
+    },
+    *queryUpdateCaseBodyData({ payload }, { call, put }) {
+      // yield call(queryUpdateCaseBodyData, payload);
+      const response = yield call(queryUpdateCaseBodyData, payload);
+      if (response) {
+        switch (response.code) {
+          case 0:
+            message.success(response.msg);
+            break;
+          case 10001:
+            message.warning(response.msg);
+            break;
+          case 10002:
+            message.warning(response.msg);
+            break;
+          case 99999:
+            reloadAuthorized();
+            message.error(response.msg);
+            yield put(routerRedux.push('/user/login'));
+            break;
+          default:
+            message.warning('出现了什么鬼');
+        }
+      } else {
+        message.error('服务器异常！');
+      }
     },
     *queryUpdateSample({ payload }, { call, put }) {
       const response = yield call(queryUpdateSample, payload);

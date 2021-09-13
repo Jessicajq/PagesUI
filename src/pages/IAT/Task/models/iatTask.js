@@ -1,16 +1,18 @@
 import { routerRedux } from 'dva/router';
-import { message } from 'antd'
+import { message } from 'antd';
 import {
   queryProjectCaseList,
   queryAddTask,
   queryTaskList,
   queryTaskExcute,
   queryTaskDelete,
+  queryTaskCopy,
   queryTaskInfo,
   queryUpdateTaskInfo,
   queryTaskResult,
   querySetTaskStatus,
   queryUpdateRunTime,
+  queryUpdateCaseBodyData,
 } from '@/services/iatApi';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -188,6 +190,32 @@ export default {
         message.error('服务器异常！');
       }
     },
+    *queryTaskCopy({ payload }, { call, put }) {
+      const response = yield call(queryTaskCopy, payload);
+      if (response) {
+        switch (response.code) {
+          case 0:
+            message.success(response.msg);
+            break;
+          case 10001:
+            message.warning(response.msg);
+            break;
+          case 10002:
+            message.warning(response.msg);
+            break;
+          case 99999:
+            reloadAuthorized();
+            message.error(response.msg);
+            yield put(routerRedux.push('/user/login'));
+            break;
+          default:
+            message.warning('出现了什么鬼');
+        }
+      } else {
+        message.error('服务器异常！');
+      }
+    },
+
     *queryProjectCaseList({ payload }, { call, put }) {
       yield put({ type: 'updateState', payload: { caseData: [] } });
       const response = yield call(queryProjectCaseList, payload);

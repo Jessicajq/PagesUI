@@ -54,14 +54,14 @@ export default class ApiCaseInfoPage extends Component {
     };
   }
 
-  componentWillMount () {
+  componentWillMount() {
     const { selectNoteId } = this.props;
     this.queryCaseDataWithLoading(selectNoteId);
     // this.queryProjectRootInfo(selectNoteId)
     // this.queryProjectGlobalValues(selectNoteId);
   }
 
-  shouldComponentUpdate (nextProps, nextState, nextContext) {
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
     if (this.props.selectNoteId !== nextProps.selectNoteId) {
       const { form } = this.props;
       form.resetFields();
@@ -116,11 +116,13 @@ export default class ApiCaseInfoPage extends Component {
   handleValueChange = () => {
     const { dispatch, selectNoteId, form } = this.props;
     const name = form.getFieldValue('name');
+    const caseDescribe = form.getFieldValue('caseDescribe');
     dispatch({
       type: 'interfaceCase/queryUpdateFolderName',
       payload: {
         id: selectNoteId,
         name,
+        caseDescribe,
       },
     }).then(() => {
       // this.queryCaseData(selectNoteId);
@@ -303,7 +305,7 @@ export default class ApiCaseInfoPage extends Component {
     });
   };
 
-  render () {
+  render() {
     const { getFieldDecorator, getFieldValue } = this.props.form;
     const { loading } = this.props;
     const { caseData, preShellChecked, postShellChecked, preShellData, postShellData } = this.state;
@@ -327,8 +329,17 @@ export default class ApiCaseInfoPage extends Component {
           <Form.Item label="用例名称">
             {getFieldDecorator('name', {
               initialValue: caseData.name || undefined,
+            })(<Input onBlur={() => this.handleValueChange()} style={{ width: '90%' }} />)}
+          </Form.Item>
+          <Form.Item label="用例描述">
+            {getFieldDecorator('caseDescribe', {
+              initialValue: caseData.caseDescribe || undefined,
             })(
-              <Input onBlur={() => this.handleValueChange()} style={{ width: '90%' }} />,
+              <Input
+                onBlur={() => this.handleValueChange()}
+                style={{ width: '90%' }}
+                placeholder="请输入用例描述"
+              />,
             )}
           </Form.Item>
           <Divider dashed orientation="left">
@@ -377,7 +388,7 @@ export default class ApiCaseInfoPage extends Component {
             )}
           </Form.Item>
           <Form.Item label="请求路径">
-            <InputGroup >
+            <InputGroup>
               <Row gutter={8}>
                 <Col span={6}>
                   {getFieldDecorator('method', {
@@ -392,6 +403,12 @@ export default class ApiCaseInfoPage extends Component {
                       </Option>
                       <Option title="GET" value="GET">
                         GET
+                      </Option>
+                      <Option title="DELETE" value="DELETE">
+                        DELETE
+                      </Option>
+                      <Option title="HEAD" value="HEAD">
+                        HEAD
                       </Option>
                     </Select>,
                   )}
@@ -412,7 +429,6 @@ export default class ApiCaseInfoPage extends Component {
                     <Button
                       key={item.type}
                       type="dashed"
-
                       onClick={() => this.handleAddEmptyValue(1)}
                       style={{ width: '90%' }}
                     >
@@ -422,7 +438,6 @@ export default class ApiCaseInfoPage extends Component {
                 }
                 return (
                   <FormKeyValuesSearchCell
-
                     caseId={caseData.id}
                     key={item.id}
                     item={item}
@@ -464,7 +479,6 @@ export default class ApiCaseInfoPage extends Component {
                     <Button
                       key={item.type}
                       type="dashed"
-
                       onClick={() => this.handleAddEmptyValue(2)}
                       style={{ width: '90%' }}
                     >
@@ -474,7 +488,6 @@ export default class ApiCaseInfoPage extends Component {
                 }
                 return (
                   <FormKeyValuesSearchCell
-
                     caseId={caseData.id}
                     key={item.id}
                     item={item}
@@ -499,9 +512,25 @@ export default class ApiCaseInfoPage extends Component {
                     editorProps={{ $blockScrolling: true }}
                     height="300px"
                     onChange={newValue => this.setState({ bodyData: newValue })}
-                    onBlur={() => this.handleCaseBodyDataChange(caseData.id)}
+                    on
+                    //         // onBlur={() => this.handleCaseBodyDataChange(caseData.id)}
                   />,
                 )}
+                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                  {[1].map((item, index) => {
+                    return (
+                      <Button
+                        key={index}
+                        type="primary"
+                        onDoubleClick={() => {
+                          this.handleCaseBodyDataChange(caseData.id);
+                        }}
+                      >
+                        双击两次提交
+                      </Button>
+                    );
+                  })}
+                </Form.Item>
               </Form.Item>
             )}
           </Form.Item>
@@ -511,7 +540,6 @@ export default class ApiCaseInfoPage extends Component {
                 initialValue: postShellChecked,
               })(
                 <Switch
-
                   checked={postShellChecked}
                   onChange={value => this.handleCheckShell(2, value)}
                 />,
@@ -561,7 +589,6 @@ export default class ApiCaseInfoPage extends Component {
                             <Button
                               key={item.type}
                               type="dashed"
-
                               onClick={() => this.handleAddEmptyValue(3)}
                               style={{ width: '90%' }}
                             >
@@ -600,7 +627,6 @@ export default class ApiCaseInfoPage extends Component {
                         <Button
                           key={item.type}
                           type="dashed"
-
                           onClick={() => this.handleAddEmptyValue(4)}
                           style={{ width: '90%' }}
                         >
@@ -645,7 +671,6 @@ export default class ApiCaseInfoPage extends Component {
                         <Button
                           key={item.type}
                           type="dashed"
-
                           onClick={() => this.queryAddEmptyGlobalValue(3)}
                           style={{ width: '90%' }}
                         >
@@ -655,13 +680,10 @@ export default class ApiCaseInfoPage extends Component {
                     }
                     return (
                       <FormKeyValuesCell
-
                         caseId={caseData.id}
                         key={item.id}
                         item={item}
-                        handleValueChange={values =>
-                          this.handleExtractValueChange(item.id, values)
-                        }
+                        handleValueChange={values => this.handleExtractValueChange(item.id, values)}
                         handleDeleteGlobalValue={() => this.handleDeleteGlobalValue(item.id)}
                       />
                     );

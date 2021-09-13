@@ -26,7 +26,7 @@ class Immediate extends PureComponent {
     const hostname = window.location.host;
     console.log('hostname:', hostname);
     this.setState({ hostname });
-    this.socket = io(`ws://${hostname}/wstask`);
+    this.socket = io(`http://${hostname}/wstask`);
     this.socket.on('connect', () => {
       console.log('<= 连接调试服务器成功！');
     });
@@ -105,6 +105,19 @@ class Immediate extends PureComponent {
       type: 'iatTask/queryTaskDelete',
       payload: {
         id,
+      },
+    }).then(() => {
+      this.queryTaskList();
+    });
+  };
+
+  handleCopyTask = (id, isTimeTask) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatTask/queryTaskCopy',
+      payload: {
+        id,
+        isTimeTask,
       },
     }).then(() => {
       this.queryTaskList();
@@ -207,6 +220,16 @@ class Immediate extends PureComponent {
                 <a style={{ color: '#eb2f06' }}>删除</a>
               </Popconfirm>
             )}
+            {[0, 3, 4, 5].indexOf(record.status) > -1 && <Divider type="vertical" />}
+            {
+              <Popconfirm
+                title="是否要复制任务？【确定】生成定时任务，【取消】生成即时任务"
+                onConfirm={() => this.handleCopyTask(record.id, 1)}
+                onCancel={() => this.handleCopyTask(record.id, 0)}
+              >
+                {<a style={{ color: '#ff00ff' }}>复制任务</a>}
+              </Popconfirm>
+            }
           </div>
         ),
       },

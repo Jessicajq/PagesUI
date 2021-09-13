@@ -95,7 +95,7 @@ export default {
     ie: 11,
   },
   devtool: ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION ? 'source-map' : false,
-  history:'hash',
+  history: 'hash',
   // 路由配置
   routes: [
     // user
@@ -245,21 +245,21 @@ export default {
   },
   proxy: {
     '/api/': {
-      target: 'http://localhost:5000/',
+      target: 'http://10.50.2.202:10082/',
       changeOrigin: true,
       // pathRewrite: { '^/server': '' },
     },
     '/img/': {
-      target: 'http://localhost:5000/',
+      target: 'http://10.50.2.202:10082/',
       changeOrigin: true,
       pathRewrite: { '^/img': '' },
     },
-    '/#/socket.io': {
-      target: "http://localhost:5000/#/",
+    '/socket.io': {
+      target: 'http://10.50.2.202:10082/#/',
       changeOrigin: true,
       ws: false,
       secure: false,
-    }
+    },
   },
   ignoreMomentLocale: true,
   lessLoaderOptions: {

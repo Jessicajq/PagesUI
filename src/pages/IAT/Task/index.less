@@ -5,7 +5,7 @@
   font-size: 22px;
   color: #999;
   right: 10px;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 .dynamic_delete_button:hover {
   color: #777;
@@ -15,9 +15,9 @@
   opacity: 0.5;
 }
 
-.listForm{
-  :global{
-    .ant-form-item{
+.listForm {
+  :global {
+    .ant-form-item {
       margin-bottom: 5px;
     }
   }
@@ -26,32 +26,31 @@
 .pageHeaderContent {
   margin-top: 20px;
   position: relative;
-  p{
+  p {
     margin-bottom: 5px;
   }
-  .total{
+  .total {
     font-weight: bold;
-    color: rgba(0,0,0,.85);
+    color: rgba(0, 0, 0, 0.85);
     font-size: 20px;
     margin-left: 10px;
   }
-  .sucess{
+  .sucess {
     font-weight: bold;
     color: #52c41a;
     font-size: 20px;
     margin-left: 10px;
   }
-  .fail{
+  .fail {
     font-weight: bold;
-    color:#f5222d;
+    color: #f5222d;
     font-size: 20px;
     margin-left: 10px;
-
   }
 }
-.resultCollapse{
-  :global{
-    .ant-collapse-header{
+.resultCollapse {
+  :global {
+    .ant-collapse-header {
       padding: 5px 0 5px 40px !important;
     }
   }
@@ -61,17 +60,16 @@
   width: 195px;
 }
 
-.caseSucess{
+.caseSucess {
   background: #6ab04c;
 }
-.caseFail{
+.caseFail {
   background: #eb4d4b;
 }
 .cardList {
   margin-bottom: -24px;
 
   .card {
-    min-height:190px;
     :global {
       .ant-card-meta-title {
         margin-bottom: 12px;
@@ -82,13 +80,14 @@
         }
       }
       .ant-card-actions {
+        height: 50px;
         background: #f7f9fa;
       }
       .ant-card-body {
-        height: 75%;
+        height: 170px;
       }
       .ant-card-body:hover {
-        .ant-card-meta-title > a {
+        .ant-card-meta-title a {
           color: #1890ff;
         }
       }
@@ -128,22 +127,35 @@
     }
   }
 }
-.deleteIcon{
+.deleteIcon {
   color: red;
   font-size: 18px;
 }
-.descriptionContainer{
+.descriptionContainer {
   padding-bottom: 10px;
 }
 
-.reportHref{
+.reportHref {
   position: absolute;
   bottom: 10px;
   right: 15px;
 }
-.item_container{
+.item_container {
   display: flex;
   flex-direction: row;
   align-items: center;
   margin-bottom: 10px;
+  .span {
+    display: block;
+    height: 63px;
+  }
+  div {
+    flex: 1;
+    height: 63px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
 }

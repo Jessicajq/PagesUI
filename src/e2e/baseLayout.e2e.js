@@ -1,4 +1,4 @@
-const RouterConfig = require('../../config/config.js').default.routes;
+const RouterConfig = require('../../config/config-dev.js').default.routes;
 
 const BASE_URL = `http://localhost:${process.env.PORT || 8000}`;
 

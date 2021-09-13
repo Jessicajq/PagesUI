@@ -148,6 +148,13 @@ export async function queryTaskDelete(params) {
   });
 }
 
+export async function queryTaskCopy(params) {
+  return request('/api/IAT/copyTask', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryUploadTreeName(params) {
   return request('/api/IAT/uploadTreeName', {
     method: 'POST',
@@ -233,37 +240,52 @@ export async function queryDebugCase(params) {
 }
 
 export async function queryProjectList(params) {
-  return request(`/api/IAT/projectList?status=${params.status.toString()}&_=${new Date().getTime().toString()}`);
+  return request(
+    `/api/IAT/projectList?status=${params.status.toString()}&_=${new Date().getTime().toString()}`,
+  );
 }
 
 export async function queryCaseData(params) {
-  return request(`/api/IAT/case/getCaseData?caseId=${params.caseId.toString()}&_=${new Date().getTime().toString()}`);
+  return request(
+    `/api/IAT/case/getCaseData?caseId=${params.caseId.toString()}&_=${new Date()
+      .getTime()
+      .toString()}`,
+  );
 }
 
 export async function queryTaskInfo(params) {
-  return request(`/api/IAT/taskPrew?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
+  return request(
+    `/api/IAT/taskPrew?id=${params.id.toString()}&_=${new Date().getTime().toString()}`,
+  );
 }
 
 export async function queryProjectGlobalValues(params) {
-  return request(`/api/IAT/projectGlobalValues?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
+  return request(
+    `/api/IAT/projectGlobalValues?id=${params.id.toString()}&_=${new Date().getTime().toString()}`,
+  );
 }
 
 export async function queryProjectRootInfo(params) {
-  return request(`/api/IAT/projectRootInfo?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
+  return request(
+    `/api/IAT/projectRootInfo?id=${params.id.toString()}&_=${new Date().getTime().toString()}`,
+  );
 }
 
 export async function queryTaskResult(params) {
-  return request(`/api/IAT/taskResult?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
+  return request(
+    `/api/IAT/taskResult?id=${params.id.toString()}&_=${new Date().getTime().toString()}`,
+  );
 }
 
 export async function queryTreeList(params) {
-  return request(`/api/IAT/treeList?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
+  return request(
+    `/api/IAT/treeList?id=${params.id.toString()}&_=${new Date().getTime().toString()}`,
+  );
 }
 
 export async function queryHomeData(params) {
   return request(`/api/IAT/getHomeData?_=${new Date().getTime().toString()}`);
 }
-
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');

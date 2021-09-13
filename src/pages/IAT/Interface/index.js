@@ -17,6 +17,7 @@ import {
   Spin,
   Switch,
   Tooltip,
+  Modal,
   Empty,
 } from 'antd';
 import { connect } from 'dva';
@@ -29,7 +30,7 @@ import CaseDebug from './CaseDebug/index';
 
 import 'brace/mode/java';
 import 'brace/theme/dracula';
-
+/* import {Message, MessageBox} from 'element-ui'*/
 const { Content, Sider } = Layout;
 const { TreeNode } = Tree;
 const { Option } = Select;
@@ -99,13 +100,17 @@ class Interface extends Component {
     document.removeEventListener('mouseup', this.checkClickElement, false);
   }
 
-  checkClickElement=event => {
+  checkClickElement = event => {
     if (this.state.rightClickItem !== null) {
-      if (event.button === 0){
+      if (event.button === 0) {
         try {
           if (document.getElementById('right_menu')) {
-            console.log(event.target.compareDocumentPosition(document.getElementById('right_menu')))
-            if (event.target.compareDocumentPosition(document.getElementById('right_menu')) !== 10) {
+            console.log(
+              event.target.compareDocumentPosition(document.getElementById('right_menu')),
+            );
+            if (
+              event.target.compareDocumentPosition(document.getElementById('right_menu')) !== 10
+            ) {
               this.setState({ rightClickItem: null });
             }
           }
@@ -114,7 +119,7 @@ class Interface extends Component {
         }
       }
     }
-  }
+  };
 
   getNodeTreeMenu() {
     const { pageX, pageY, noteType } = { ...this.state.rightClickItem };
@@ -129,7 +134,12 @@ class Interface extends Component {
 
     const menu =
       noteType === 1 ? (
-        <Menu id="right_menu" onClick={this.handleRightMenuClick} style={tmpStyle} className={styles.RightMenu}>
+        <Menu
+          id="right_menu"
+          onClick={this.handleRightMenuClick}
+          style={tmpStyle}
+          className={styles.RightMenu}
+        >
           <Menu.Item key="1">
             <Icon type="plus-circle" />
             添加用例
@@ -144,7 +154,12 @@ class Interface extends Component {
           </Menu.Item>
         </Menu>
       ) : (
-        <Menu id="right_menu" onClick={this.handleRightMenuClick} style={tmpStyle} className={styles.RightMenu}>
+        <Menu
+          id="right_menu"
+          onClick={this.handleRightMenuClick}
+          style={tmpStyle}
+          className={styles.RightMenu}
+        >
           <Menu.Item key="5">
             <Icon type="copy" />
             复制用例
@@ -157,7 +172,6 @@ class Interface extends Component {
       );
     return this.state.rightClickItem && menu;
   }
-
   handleRightMenuClick = e => {
     const code = e.key;
     switch (code) {
@@ -168,13 +182,35 @@ class Interface extends Component {
         this.handleAddSubFolder();
         break;
       case '4':
-        this.handleDeleteSubFolder();
+        const folderId = this.state.rightClickItem && this.state.rightClickItem.dataRef.id;
+        console.log(this.state.rightClickItem, folderId);
+        const modalFolder = Modal.confirm();
+        modalFolder.update({
+          title: '是否确定删除目录？',
+          onOk: () => {
+            this.handleDeleteSubFolder(folderId);
+          },
+          onCancel: () => {
+            message.info('取消删除目录');
+          },
+        });
         break;
       case '5':
         this.handleCopyCase();
         break;
       case '6':
-        this.hanldeDeleteCase();
+        const caseId = this.state.rightClickItem && this.state.rightClickItem.dataRef.id;
+        console.log(this.state.rightClickItem, caseId);
+        const modal = Modal.confirm();
+        modal.update({
+          title: '是否确定删除用例？',
+          onOk: () => {
+            this.hanldeDeleteCase(caseId);
+          },
+          onCancel: () => {
+            message.info('取消删除用例');
+          },
+        });
         break;
       default:
         message.warning('出现了什么鬼');
@@ -288,13 +324,14 @@ class Interface extends Component {
     );
   };
 
-  handleDeleteSubFolder = () => {
-    const deleteId = this.state.rightClickItem.dataRef.id;
+  handleDeleteSubFolder = id => {
+    console.log(this.state.rightClickItem, id);
+    const deleteId = id;
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryDeleteFolder',
       payload: {
-        id: this.state.rightClickItem.dataRef.id,
+        id: id,
       },
     }).then(() => {
       this.queryTreeList(this.state.project);
@@ -303,8 +340,8 @@ class Interface extends Component {
     });
   };
 
-  hanldeDeleteCase = () => {
-    const deleteId = this.state.rightClickItem.dataRef.id;
+  hanldeDeleteCase = id => {
+    const deleteId = id;
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryDeleteCase',
@@ -346,14 +383,14 @@ class Interface extends Component {
         },
         () => {
           const localStorage = getTage();
-          console.log('localStorage:', localStorage)
-          console.log('caseId:', caseId)
+          console.log('localStorage:', localStorage);
+          console.log('caseId:', caseId);
           if (caseId) {
             this.querySampleInfo(caseId, true);
           } else if (localStorage) {
             const project = localStorage.projectId;
             this.setState({ project }, () => {
-              console.log('project:', project)
+              console.log('project:', project);
               this.handleProjectChange(this.state.project);
             });
           }
@@ -362,7 +399,7 @@ class Interface extends Component {
     });
   };
 
-  querySampleInfo=(id, isRef = false) => {
+  querySampleInfo = (id, isRef = false) => {
     this.setState(
       {
         selectedKeys: [id],
@@ -418,7 +455,7 @@ class Interface extends Component {
         if (isRef) {
           this.setState({ project: projectId }, () => {
             this.handleProjectChange(this.state.project);
-            this.queryTreeList(projectId)
+            this.queryTreeList(projectId);
           });
         }
       });
@@ -619,7 +656,6 @@ class Interface extends Component {
                 selectable={false}
                 title={
                   <Input
-
                     style={{ width: 100 }}
                     autoFocus
                     onBlur={e => this.submitAddFolder(e.target.value)}
@@ -637,7 +673,6 @@ class Interface extends Component {
                 selectable={false}
                 title={
                   <Input
-
                     style={{ width: 100 }}
                     autoFocus
                     onBlur={e => this.submitAddCase(e.target.value)}
@@ -668,7 +703,6 @@ class Interface extends Component {
           <div className={styles.item_content_container}>
             <Input
               placeholder="标题名称"
-
               value={infoName}
               onChange={e => {
                 this.setState({ infoName: e.target.value });
@@ -694,7 +728,6 @@ class Interface extends Component {
               placeholder="请选择项目"
               value={project || undefined}
               style={{ width: '100%' }}
-
               onChange={this.handleProjectChange}
             >
               {projectList &&

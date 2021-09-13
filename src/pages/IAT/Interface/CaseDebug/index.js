@@ -25,7 +25,7 @@ export default class CaseDebugPage extends PureComponent {
   componentWillMount() {
     const hostname = window.location.host;
     this.setState({ hostname });
-    this.socket = io(`ws://${hostname}/wstask`);
+    this.socket = io(`http://${hostname}/wstask`);
     this.socket.on('connect', () => {
       console.log('<= 连接调试服务器成功！');
     });
@@ -68,7 +68,7 @@ export default class CaseDebugPage extends PureComponent {
         if ([3, 4, 5].indexOf(taskInfo.status) > -1) {
           clearTimeout(this.timer);
           const taskLog = JSON.parse(taskInfo.taskLog);
-          console.log('tasklog', taskLog)
+          console.log('tasklog', taskLog);
           this.setState({ spinning: false, taskLog });
         }
         if (count > 600) {
@@ -121,12 +121,7 @@ export default class CaseDebugPage extends PureComponent {
           )}
         </Form.Item>
         <div className={styles.debugHeaderAction}>
-          <Button
-            icon="caret-right"
-            type="primary"
-
-            onClick={() => this.handleApiDebug()}
-          >
+          <Button icon="caret-right" type="primary" onClick={() => this.handleApiDebug()}>
             调试接口
           </Button>
         </div>
