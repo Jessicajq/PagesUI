@@ -245,17 +245,17 @@ export default {
   },
   proxy: {
     '/api/': {
-      target: 'http://localhost:5000/',
+      target: 'http://10.50.2.202:10082/',
       changeOrigin: true,
       // pathRewrite: { '^/server': '' },
     },
     '/img/': {
-      target: 'http://localhost:5000/',
+      target: 'http://10.50.2.202:10082/',
       changeOrigin: true,
       pathRewrite: { '^/img': '' },
     },
     '/socket.io': {
-      target: 'http://localhost:5000/#/',
+      target: 'http://10.50.2.202:10082/#/',
       changeOrigin: true,
       ws: false,
       secure: false,

@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign,react/destructuring-assignment,consistent-return,array-callback-return */
+/* eslint-disable no-param-reassign */
 import React, { PureComponent } from 'react';
 import {
   Form,
@@ -42,6 +42,7 @@ let paramId = 0;
       for (const changeKey in changedValues) {
         if (changeKey === 'project') {
           const projectId = allValues.project;
+          console.log('projectId:', projectId);
           const { dispatch } = props;
           dispatch({
             type: 'iatTask/queryProjectCaseList',
@@ -54,73 +55,16 @@ let paramId = 0;
     }
   },
 })
-class immDetail extends PureComponent {
+class AddImm extends PureComponent {
   state = {
-    taskId: '',
     projectList: [],
-    headerKeys: [],
-    paramkeys: [],
-    params: [],
-    headers: [],
-    taskInfo: {},
   };
 
   componentWillMount() {
-    const params = this.props.location.search;
-    if (params.indexOf('?') !== -1) {
-      const detailId = params.substr(1);
-      this.queryProjectList(detailId);
-    }
+    this.queryProjectList();
   }
 
-  queryTaskInfo = id => {
-    this.props
-      .dispatch({
-        type: 'iatTask/queryTaskInfo',
-        payload: { id },
-      })
-      .then(() => {
-        const { iatTask } = this.props;
-        const headerKeys = [];
-        const paramkeys = [];
-        const headers = [];
-        const params = [];
-        headerId = iatTask.taskInfo.headers.length > 0 && iatTask.taskInfo.headers.length - 1;
-        paramId = iatTask.taskInfo.params.length > 0 && iatTask.taskInfo.params.length - 1;
-
-        iatTask.taskInfo.headers.forEach((item, index) => {
-          headerKeys.push(index);
-          headers.push(item);
-        });
-        iatTask.taskInfo.params.forEach((item, index) => {
-          paramkeys.push(index);
-          params.push(item);
-        });
-
-        this.setState(
-          {
-            taskId: id,
-            taskInfo: iatTask.taskInfo,
-            headerKeys,
-            paramkeys,
-            headers,
-            params,
-          },
-          () => {
-            const { dispatch } = this.props;
-            dispatch({
-              type: 'iatTask/queryProjectCaseList',
-              //type: 'interfaceCase/queryTreeList',
-              payload: {
-                id: iatTask.taskInfo.project,
-              },
-            });
-          },
-        );
-      });
-  };
-
-  queryProjectList = detailId => {
+  queryProjectList = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'iatSystem/queryProjectList',
@@ -128,15 +72,10 @@ class immDetail extends PureComponent {
         status: '1',
       },
     }).then(() => {
-      const { projectList } = this.props.iatSystem;
-      this.setState(
-        {
-          projectList,
-        },
-        () => {
-          this.queryTaskInfo(detailId);
-        },
-      );
+      const { iatSystem } = this.props;
+      this.setState({
+        projectList: iatSystem.projectList,
+      });
     });
   };
 
@@ -155,10 +94,9 @@ class immDetail extends PureComponent {
         const formatTime = moment(values.runTime).format('HH:mm');
         values.runTime = formatTime;
         dispatch({
-          type: 'iatTask/queryUpdateTaskInfo',
+          type: 'iatTask/queryAddTask',
           payload: {
             info: values,
-            id: this.state.taskId,
           },
         });
       }
@@ -171,13 +109,6 @@ class immDetail extends PureComponent {
     const keys = form.getFieldValue('headerkeys');
     const nextKeys = keys.concat(++headerId);
     // important! notify form to detect changes
-    const { headers } = this.state;
-    headers.push({
-      id: new Date().getTime(),
-      key: '',
-      value: '',
-    });
-    this.setState({ headers });
     form.setFieldsValue({
       headerkeys: nextKeys,
     });
@@ -189,13 +120,6 @@ class immDetail extends PureComponent {
     const keys = form.getFieldValue('paramkeys');
     const nextKeys = keys.concat(++paramId);
     // important! notify form to detect changes
-    const { params } = this.state;
-    params.push({
-      id: new Date().getTime(),
-      key: '',
-      value: '',
-    });
-    this.setState({ params });
     form.setFieldsValue({
       paramkeys: nextKeys,
     });
@@ -226,7 +150,7 @@ class immDetail extends PureComponent {
       form: { getFieldDecorator, getFieldValue },
       iatTask,
     } = this.props;
-    const { projectList, taskInfo, headerKeys, headers, params, paramkeys } = this.state;
+    const { projectList } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -244,60 +168,48 @@ class immDetail extends PureComponent {
         sm: { span: 10, offset: 7 },
       },
     };
-    getFieldDecorator('headerkeys', { initialValue: headerKeys });
+    getFieldDecorator('headerkeys', { initialValue: [] });
     const headerkeys = getFieldValue('headerkeys');
-    const headerItems = headerkeys.map((k, index) => {
-      console.log(headers[k]);
-
-      if (headers[k]) {
-        return (
-          <Form.Item
-            {...(index === 0 ? formItemLayout : submitFormLayout)}
-            label={index === 0 ? '请求头参数' : ''}
-            required={false}
-            key={k}
-          >
-            {getFieldDecorator(`headers[${k}]`, {
-              validateTrigger: ['onChange', 'onBlur'],
-              initialValue: headers[k],
-            })(<KeyValueInput />)}
-            {headerkeys.length > 0 ? (
-              <Icon
-                className={styles.dynamic_delete_button}
-                type="minus-circle-o"
-                onClick={() => this.removeHeader(k)}
-              />
-            ) : null}
-          </Form.Item>
-        );
-      }
-    });
-    getFieldDecorator('paramkeys', { initialValue: paramkeys });
-    const paramkeys1 = getFieldValue('paramkeys');
-    const paramItems = paramkeys1.map((k, index) => {
-      if (params[k]) {
-        return (
-          <Form.Item
-            {...(index === 0 ? formItemLayout : submitFormLayout)}
-            label={index === 0 ? '全局参数' : ''}
-            required={false}
-            key={k}
-          >
-            {getFieldDecorator(`params[${k}]`, {
-              validateTrigger: ['onChange', 'onBlur'],
-              initialValue: params[k],
-            })(<KeyValueInput />)}
-            {paramkeys.length > 0 ? (
-              <Icon
-                className={styles.dynamic_delete_button}
-                type="minus-circle-o"
-                onClick={() => this.removeParam(k)}
-              />
-            ) : null}
-          </Form.Item>
-        );
-      }
-    });
+    const headerItems = headerkeys.map((k, index) => (
+      <Form.Item
+        {...(index === 0 ? formItemLayout : submitFormLayout)}
+        label={index === 0 ? '请求头参数' : ''}
+        required={false}
+        key={k}
+      >
+        {getFieldDecorator(`headers[${k}]`, {
+          validateTrigger: ['onChange', 'onBlur'],
+        })(<KeyValueInput />)}
+        {headerkeys.length > 0 ? (
+          <Icon
+            className={styles.dynamic_delete_button}
+            type="minus-circle-o"
+            onClick={() => this.removeHeader(k)}
+          />
+        ) : null}
+      </Form.Item>
+    ));
+    getFieldDecorator('paramkeys', { initialValue: [] });
+    const paramkeys = getFieldValue('paramkeys');
+    const paramItems = paramkeys.map((k, index) => (
+      <Form.Item
+        {...(index === 0 ? formItemLayout : submitFormLayout)}
+        label={index === 0 ? '全局参数' : ''}
+        required={false}
+        key={k}
+      >
+        {getFieldDecorator(`params[${k}]`, {
+          validateTrigger: ['onChange', 'onBlur'],
+        })(<KeyValueInput />)}
+        {paramkeys.length > 0 ? (
+          <Icon
+            className={styles.dynamic_delete_button}
+            type="minus-circle-o"
+            onClick={() => this.removeParam(k)}
+          />
+        ) : null}
+      </Form.Item>
+    ));
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
@@ -310,7 +222,6 @@ class immDetail extends PureComponent {
                     message: '项目名称不可为空',
                   },
                 ],
-                initialValue: taskInfo.project,
               })(
                 <Select placeholder="请先选择项目" style={{ width: 220 }}>
                   {projectList &&
@@ -331,7 +242,7 @@ class immDetail extends PureComponent {
                       message: '任务类型不可为空',
                     },
                   ],
-                  initialValue: taskInfo.taskType && taskInfo.taskType.toString(),
+                  initialValue: '1',
                 })(
                   <Radio.Group>
                     <Radio value="1">即时任务</Radio>
@@ -340,7 +251,7 @@ class immDetail extends PureComponent {
                 )}
                 <FormItem style={{ marginBottom: 0 }}>
                   {getFieldDecorator('runTime', {
-                    initialValue: moment(taskInfo.runTime, 'HH:mm'),
+                    initialValue: moment('12:08', 'HH:mm'),
                   })(
                     <TimePicker
                       format="HH:mm"
@@ -361,7 +272,6 @@ class immDetail extends PureComponent {
                     message: '任务名称不可为空',
                   },
                 ],
-                initialValue: taskInfo.testname,
               })(<Input placeholder="请输入任务名称" />)}
             </FormItem>
             <FormItem {...formItemLayout} label="任务描述">
@@ -371,7 +281,6 @@ class immDetail extends PureComponent {
                     required: false,
                   },
                 ],
-                initialValue: taskInfo.taskDesc,
               })(<TextArea style={{ minHeight: 32 }} placeholder="请输入任务描述" rows={4} />)}
             </FormItem>
             <FormItem {...formItemLayout} label="参数类型">
@@ -381,13 +290,11 @@ class immDetail extends PureComponent {
                     required: true,
                   },
                 ],
-                initialValue: taskInfo.valueType,
+                initialValue: 1,
               })(
                 <Radio.Group>
                   <Radio value={1}>正式版</Radio>
-                  <Radio value={2} disabled>
-                    测试版
-                  </Radio>
+                  <Radio value={2}>测试版</Radio>
                 </Radio.Group>,
               )}
             </FormItem>
@@ -399,13 +306,12 @@ class immDetail extends PureComponent {
                     message: '测试域名不可为空',
                   },
                 ],
-                initialValue: taskInfo.domain,
               })(<Input placeholder="请输入测试域名 .eg: https://app.xxx.com:8080" />)}
             </FormItem>
             <FormItem {...formItemLayout} label="代理设置">
-              {getFieldDecorator('proxy', {
-                initialValue: taskInfo.proxy,
-              })(<Input placeholder="格式: user:password@server:port" />)}
+              {getFieldDecorator('proxy', {})(
+                <Input placeholder="格式: user:password@server:port" />,
+              )}
             </FormItem>
             <Form.Item className={styles.listForm}>
               {headerItems}
@@ -431,16 +337,11 @@ class immDetail extends PureComponent {
                     message: '任务用例不可为空',
                   },
                 ],
-                initialValue: taskInfo.caseIds,
               })(
                 <Transfer
                   dataSource={iatTask.caseData}
                   titles={['项目用例', '任务用例']}
                   targetKeys={getFieldValue('case')}
-                  // selectedKeys={selectedKeys}
-                  // onChange={this.handleChange}
-                  // onSelectChange={this.handleSelectChange}
-                  // onScroll={this.handleScroll}
                   render={item => item.name}
                 />,
               )}
@@ -448,7 +349,7 @@ class immDetail extends PureComponent {
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button onClick={() => this.handleBack()}>取消</Button>
               <Button type="primary" htmlType="submit" style={{ marginLeft: 8 }}>
-                保存
+                提交
               </Button>
             </FormItem>
           </Form>
@@ -457,4 +358,4 @@ class immDetail extends PureComponent {
     );
   }
 }
-export default immDetail;
+export default AddImm;

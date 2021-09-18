@@ -206,7 +206,7 @@ class Immediate extends PureComponent {
         render: (text, record) => (
           <div>
             {record.status === 0 && <a onClick={() => this.handleRunTask(record.id)}>开始执行</a>}
-            {[3, 4, 5].indexOf(record.status) > -1 && (
+            {record.status === 3 && (
               <a
                 style={{ color: '#2e86de', fontWeight: 'bold' }}
                 href={`/#/task/api/immediate/report?${record.id}`}

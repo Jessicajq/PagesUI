@@ -110,7 +110,6 @@ class immDetail extends PureComponent {
             const { dispatch } = this.props;
             dispatch({
               type: 'iatTask/queryProjectCaseList',
-              //type: 'interfaceCase/queryTreeList',
               payload: {
                 id: iatTask.taskInfo.project,
               },
